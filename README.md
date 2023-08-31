@@ -34,12 +34,20 @@ El código del programa incluye las siguientes funciones principales:
 Para compilar y ejecutar el programa, sigue los siguientes pasos:
 
 1. Asegúrate de tener instalada la librería SDL.
+```bash
+sudo apt install libsdl2-dev
+```
 2. Compila el programa utilizando el compilador de C++ (g++ u otro similar) con el flag `-lSDL2`.
+```bash
+g++ -o screenSeq ScreenSeq.cpp -lSDL2
+```
 3. Ejecuta el programa y proporciona el número de círculos como argumento en la línea de comandos.
+```bash
+./ screenSeq 10
+```
 
-Ejemplo de compilación y ejecución:
+## Autores
 
-```sh
-g++ -o screensaver ScreenSeq.cpp -lSDL2
-./screensaver 20 
-``` 
+#### Pablo Gonzalez iPablo271
+#### Jose Hernandez her20053
+#### Javier Mombiela 20067
