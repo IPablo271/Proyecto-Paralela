@@ -76,20 +76,28 @@ void moveCircles() {
     for (Circle& circle : circles) {
         circle.x += circle.dx;
         circle.y += circle.dy;
-        
-        if (circle.x <= 0 || circle.x >= SCREEN_WIDTH - CIRCLE_RADIUS * 2) {
-            circle.dx = -circle.dx; // Cambio de dirección en el eje x
 
-            // Cambiar aleatoriamente la velocidad en el eje y
-            circle.dy = (std::rand() % (MAX_SPEED * 2 + 1)) - MAX_SPEED;
+        // Manejar colisiones con los bordes en el eje x
+        if (circle.x <= 0) {
+            circle.x = 0;
+            circle.dx *= -1.0; // Invertir dirección y aplicar factor de rebote
+        } else if (circle.x >= SCREEN_WIDTH - CIRCLE_RADIUS * 2) {
+            circle.x = SCREEN_WIDTH - CIRCLE_RADIUS * 2;
+            circle.dx *= -1.0; // Invertir dirección y aplicar factor de rebote
+        }
+
+        // Manejar colisiones con los bordes en el eje y
+        if (circle.y <= 0) {
+            circle.y = 0;
+            circle.dy *= -1.0; // Invertir dirección y aplicar factor de rebote
+        } else if (circle.y >= SCREEN_HEIGHT - CIRCLE_RADIUS * 2) {
+            circle.y = SCREEN_HEIGHT - CIRCLE_RADIUS * 2;
+            circle.dy *= -1.0; // Invertir dirección y aplicar factor de rebote
         }
         
-        if (circle.y <= 0 || circle.y >= SCREEN_HEIGHT - CIRCLE_RADIUS * 2) {
-            circle.dy = -circle.dy; // Cambio de dirección en el eje y
-
-            // Cambiar aleatoriamente la velocidad en el eje x
-            circle.dx = (std::rand() % (MAX_SPEED * 2 + 1)) - MAX_SPEED;
-        }
+        // Aplicar fricción
+        circle.dx *= 0.99;
+        circle.dy *= 0.99;
     }
 }
 
