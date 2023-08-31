@@ -41,5 +41,5 @@ Ejemplo de compilación y ejecución:
 
 ```sh
 g++ -o screensaver ScreenSeq.cpp -lSDL2
-./screensaver 20 20
+./screensaver 20 
 ``` 
