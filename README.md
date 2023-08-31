@@ -36,6 +36,8 @@ Para compilar y ejecutar el programa, sigue los siguientes pasos:
 1. Asegúrate de tener instalada la librería SDL.
 ```bash
 sudo apt install libsdl2-dev
+
+brew install sdl2
 ```
 2. Compila el programa utilizando el compilador de C++ (g++ u otro similar) con el flag `-lSDL2`.
 ```bash
@@ -48,6 +50,6 @@ g++ -o screenSeq ScreenSeq.cpp -lSDL2
 
 ## Autores
 
-#### Pablo Gonzalez iPablo271
-#### Jose Hernandez her20053
-#### Javier Mombiela 20067
+#### Pablo Gonzalez  iPablo271
+#### Jose Hernandez  her20053
+#### Javier Mombiela javim7

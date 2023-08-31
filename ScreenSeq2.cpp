@@ -1,6 +1,6 @@
 
 // Librerias utiliazadas
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #include <iostream>
 #include <vector>
 #include <cstdlib>
