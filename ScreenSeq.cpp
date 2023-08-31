@@ -71,21 +71,28 @@ void generateRandomCircles(int numCircles) {
         circles.push_back(circle);
     }
 }
-// Función para mover los círculos
+// Función para mover los círculos ( se cambia la velocidad cuando tocan el borde)
 void moveCircles() {
     for (Circle& circle : circles) {
         circle.x += circle.dx;
         circle.y += circle.dy;
         
         if (circle.x <= 0 || circle.x >= SCREEN_WIDTH - CIRCLE_RADIUS * 2) {
-            circle.dx = -circle.dx;
+            circle.dx = -circle.dx; // Cambio de dirección en el eje x
+
+            // Cambiar aleatoriamente la velocidad en el eje y
+            circle.dy = (std::rand() % (MAX_SPEED * 2 + 1)) - MAX_SPEED;
         }
         
         if (circle.y <= 0 || circle.y >= SCREEN_HEIGHT - CIRCLE_RADIUS * 2) {
-            circle.dy = -circle.dy;
+            circle.dy = -circle.dy; // Cambio de dirección en el eje y
+
+            // Cambiar aleatoriamente la velocidad en el eje x
+            circle.dx = (std::rand() % (MAX_SPEED * 2 + 1)) - MAX_SPEED;
         }
     }
 }
+
 // Función para dibujar un círculo relleno
 void drawFilledCircle(SDL_Renderer* renderer, int centerX, int centerY, int radius, const SDL_Color& color) {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
