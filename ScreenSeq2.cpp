@@ -8,8 +8,8 @@
 #include <cmath>
 
 // Constantes de tamaño y ajustes del programa
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+const int SCREEN_WIDTH = 1000;
+const int SCREEN_HEIGHT = 1000;
 const int MAX_CIRCLES = 100;
 const int CIRCLE_RADIUS = 20;
 const int MAX_SPEED = 5;
@@ -86,20 +86,48 @@ void moveCircles()
         circle.x += circle.dx;
         circle.y += circle.dy;
 
-        if (circle.x <= 0 || circle.x >= SCREEN_WIDTH - CIRCLE_RADIUS * 2)
+        if (circle.x <= CIRCLE_RADIUS || circle.x >= SCREEN_WIDTH - CIRCLE_RADIUS)
         {
             circle.dx = -circle.dx; // Cambio de dirección en el eje x
-
-            // Cambiar aleatoriamente la velocidad en el eje y con un rango más amplio
-            circle.dy = (std::rand() % (MAX_SPEED * 3 + 1)) - MAX_SPEED * 2;
         }
 
-        if (circle.y <= 0 || circle.y >= SCREEN_HEIGHT - CIRCLE_RADIUS * 2)
+        if (circle.y <= CIRCLE_RADIUS || circle.y >= SCREEN_HEIGHT - CIRCLE_RADIUS)
         {
             circle.dy = -circle.dy; // Cambio de dirección en el eje y
+        }
+    }
 
-            // Cambiar aleatoriamente la velocidad en el eje x con un rango más amplio
-            circle.dx = (std::rand() % (MAX_SPEED * 3 + 1)) - MAX_SPEED * 2;
+    // Verificar colisiones entre círculos
+    for (size_t i = 0; i < circles.size(); ++i)
+    {
+        for (size_t j = i + 1; j < circles.size(); ++j)
+        {
+            int dx = circles[i].x - circles[j].x;
+            int dy = circles[i].y - circles[j].y;
+            int distanceSquared = dx * dx + dy * dy;
+
+            if (distanceSquared <= 4 * CIRCLE_RADIUS * CIRCLE_RADIUS) // 2 * radio porque estamos comparando centros
+            {
+                // Invertir direcciones
+                circles[i].dx = -circles[i].dx;
+                circles[i].dy = -circles[i].dy;
+                circles[j].dx = -circles[j].dx;
+                circles[j].dy = -circles[j].dy;
+
+                // Calcular la distancia real y el desplazamiento necesario para corregir la colisión
+                float distance = sqrt(distanceSquared);
+                float overlap = 2 * CIRCLE_RADIUS - distance;
+
+                // Normalizar el vector de dirección
+                float dxn = dx / distance;
+                float dyn = dy / distance;
+
+                // Mover los círculos fuera de la colisión
+                circles[i].x += (overlap / 2) * dxn;
+                circles[i].y += (overlap / 2) * dyn;
+                circles[j].x -= (overlap / 2) * dxn;
+                circles[j].y -= (overlap / 2) * dyn;
+            }
         }
     }
 }
