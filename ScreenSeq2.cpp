@@ -10,7 +10,7 @@
 // Constantes de tamaño y ajustes del programa
 const int SCREEN_WIDTH = 1000;
 const int SCREEN_HEIGHT = 1000;
-const int MAX_CIRCLES = 100;
+const int MAX_CIRCLES = 250;
 const int CIRCLE_RADIUS = 20;
 const int MAX_SPEED = 5;
 
