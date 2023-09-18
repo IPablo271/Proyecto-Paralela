@@ -3,7 +3,9 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "/opt/homebrew/opt/libomp/include",
+                "/opt/homebrew/Cellar/sdl2/2.28.2/include/SDL2"
             ],
             "defines": [],
             "macFrameworkPath": [
