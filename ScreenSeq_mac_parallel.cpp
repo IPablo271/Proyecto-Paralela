@@ -9,9 +9,9 @@
 #include <omp.h>
 
 // Constantes de tamaño y ajustes del programa
-const int SCREEN_WIDTH = 1000;
+const int SCREEN_WIDTH = 1800;
 const int SCREEN_HEIGHT = 1000;
-const int MAX_CIRCLES = 250;
+const int MAX_CIRCLES = 750;
 const int CIRCLE_RADIUS = 20;
 const int MAX_SPEED = 5;
 
@@ -61,29 +61,35 @@ void close()
     SDL_DestroyWindow(window);
     SDL_Quit();
 }
+
 // Función para generar círculos aleatorios
 void generateRandomCircles(int numCircles)
 {
     circles.clear();
-    std::srand(std::time(nullptr));
 
-    // Generar círculos aleatorios
-    for (int i = 0; i < numCircles; ++i)
+#pragma omp parallel
     {
-        Circle circle;
-        circle.x = std::rand() % (SCREEN_WIDTH - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
-        circle.y = std::rand() % (SCREEN_HEIGHT - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
-        circle.dx = std::rand() % (MAX_SPEED * 2 + 1) - MAX_SPEED;
-        circle.dy = std::rand() % (MAX_SPEED * 2 + 1) - MAX_SPEED;
-        circle.color = {static_cast<Uint8>(std::rand() % 256), static_cast<Uint8>(std::rand() % 256), static_cast<Uint8>(std::rand() % 256)};
-        circles.push_back(circle);
+        unsigned int seed = omp_get_thread_num();
+
+#pragma omp for
+        for (int i = 0; i < numCircles; ++i)
+        {
+            Circle circle;
+            circle.x = rand_r(&seed) % (SCREEN_WIDTH - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
+            circle.y = rand_r(&seed) % (SCREEN_HEIGHT - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
+            circle.dx = rand_r(&seed) % (MAX_SPEED * 2 + 1) - MAX_SPEED;
+            circle.dy = rand_r(&seed) % (MAX_SPEED * 2 + 1) - MAX_SPEED;
+            circle.color = {static_cast<Uint8>(rand_r(&seed) % 256), static_cast<Uint8>(rand_r(&seed) % 256), static_cast<Uint8>(rand_r(&seed) % 256)};
+
+#pragma omp critical
+            circles.push_back(circle);
+        }
     }
 }
 // Función para mover los círculos ( se cambia la velocidad cuando tocan el borde)
 void moveCircles()
 {
-    
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < circles.size(); ++i)
     {
         Circle &circle = circles[i];
@@ -101,22 +107,8 @@ void moveCircles()
         }
     }
 
-    {
-        circle.x += circle.dx;
-        circle.y += circle.dy;
-
-        if (circle.x <= CIRCLE_RADIUS || circle.x >= SCREEN_WIDTH - CIRCLE_RADIUS)
-        {
-            circle.dx = -circle.dx; // Cambio de dirección en el eje x
-        }
-
-        if (circle.y <= CIRCLE_RADIUS || circle.y >= SCREEN_HEIGHT - CIRCLE_RADIUS)
-        {
-            circle.dy = -circle.dy; // Cambio de dirección en el eje y
-        }
-    }
-
     // Verificar colisiones entre círculos
+#pragma omp parallel for
     for (size_t i = 0; i < circles.size(); ++i)
     {
         for (size_t j = i + 1; j < circles.size(); ++j)
@@ -157,19 +149,7 @@ void drawFilledCircle(SDL_Renderer *renderer, int centerX, int centerY, int radi
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
 
     // Llenar el circulo con puntos dentro del radio
-    
-    #pragma omp parallel for collapse(2)
     for (int y = -radius; y <= radius; ++y)
-    {
-        for (int x = -radius; x <= radius; ++x)
-        {
-            if (x * x + y * y <= radius * radius)
-            {
-                SDL_RenderDrawPoint(renderer, centerX + x, centerY + y);
-            }
-        }
-    }
-
     {
         for (int x = -radius; x <= radius; ++x)
         {
@@ -254,9 +234,9 @@ int main(int argc, char *argv[])
         }
 
         // Esperar para mantener 60 FPS
-        if (deltaTime < 1000 / 60)
+        if (deltaTime < 1000 / 120)
         {
-            SDL_Delay(1000 / 60 - deltaTime);
+            SDL_Delay(1000 / 120 - deltaTime);
         }
     }
     // Cerrar SDL

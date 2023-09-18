@@ -8,9 +8,9 @@
 #include <cmath>
 
 // Constantes de tamaño y ajustes del programa
-const int SCREEN_WIDTH = 1000;
+const int SCREEN_WIDTH = 1800;
 const int SCREEN_HEIGHT = 1000;
-const int MAX_CIRCLES = 250;
+const int MAX_CIRCLES = 750;
 const int CIRCLE_RADIUS = 20;
 const int MAX_SPEED = 5;
 
@@ -223,9 +223,9 @@ int main(int argc, char *argv[])
         }
 
         // Esperar para mantener 60 FPS
-        if (deltaTime < 1000 / 60)
+        if (deltaTime < 1000 / 120)
         {
-            SDL_Delay(1000 / 60 - deltaTime);
+            SDL_Delay(1000 / 120 - deltaTime);
         }
     }
     // Cerrar SDL
