@@ -131,7 +131,7 @@ void drawFilledCircle(SDL_Renderer *renderer, int centerX, int centerY, int radi
 //funcion para renderizar el texto
 void renderText(const std::string &text, int x, int y)
 {
-    TTF_Font *font = TTF_OpenFont("/home/javimombiela/Downloads/Roboto-Medium.ttf", 18); // Asegúrate de tener este archivo de fuente en tu directorio
+    TTF_Font *font = TTF_OpenFont("./Roboto-Medium.ttf", 18); // Asegúrate de tener este archivo de fuente en tu directorio
     if (font == nullptr)
     {
         std::cerr << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
@@ -162,8 +162,10 @@ void render(int frames)
 
 
     // Dibujar los círculos con la funcion drawFilledCircle
-    for (const Circle &circle : circles)
+    #pragma omp for // Se paraleliza el bucle for
+    for (int i = 0; i < circles.size(); ++i)
     {
+        const Circle &circle = circles[i];
         drawFilledCircle(renderer, circle.x + CIRCLE_RADIUS, circle.y + CIRCLE_RADIUS, CIRCLE_RADIUS, circle.color);
     }
 
@@ -171,6 +173,7 @@ void render(int frames)
     renderText(fpsText, 10, 10); // Renderiza el texto en la posición (10,10)
     SDL_RenderPresent(renderer);
 }
+
 
 // Función principal del programa
 int main(int argc, char *argv[])

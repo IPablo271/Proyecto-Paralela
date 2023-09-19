@@ -127,7 +127,7 @@ void drawFilledCircle(SDL_Renderer *renderer, int centerX, int centerY, int radi
 //funcion para renderizar el texto
 void renderText(const std::string &text, int x, int y)
 {
-    TTF_Font *font = TTF_OpenFont("/home/javimombiela/Downloads/Roboto-Medium.ttf", 18); // Asegúrate de tener este archivo de fuente en tu directorio
+    TTF_Font *font = TTF_OpenFont("./Roboto-Medium.ttf", 18); // Asegúrate de tener este archivo de fuente en tu directorio
     if (font == nullptr)
     {
         std::cerr << "Failed to load font! SDL_ttf Error: " << TTF_GetError() << std::endl;
