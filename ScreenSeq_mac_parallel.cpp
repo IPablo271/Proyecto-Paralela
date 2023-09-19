@@ -162,8 +162,13 @@ int main(int argc, char *argv[])
 
     // Variables para medir el tiempo
     Uint32 startTime = SDL_GetTicks();
+    Uint32 lastFPSTime = SDL_GetTicks();
     Uint32 prevTime = startTime;
+    Uint32 totalTime = 0;
     int frames = 0;
+    int totalFrames = 0;
+    int displayFrames = 0;
+
     // Bucle principal
     while (!quit)
     {
@@ -187,6 +192,8 @@ int main(int argc, char *argv[])
 
         // Calcular y mostrar FPS
         frames++;
+        totalFrames++;
+        totalTime += deltaTime;
         if (currentTime - startTime >= 1000)
         {
             std::cout << "FPS: " << frames << std::endl;
@@ -200,6 +207,14 @@ int main(int argc, char *argv[])
             SDL_Delay(1000 / 60 - deltaTime);
         }
     }
+
+    if (totalTime > 0) {
+        float avgFPS = 1000.0f * totalFrames / totalTime;
+        std::cout << "Average FPS: " << avgFPS << std::endl;
+    } else {
+        std::cout << "No frames were rendered." << std::endl;
+    }
+
     // Cerrar SDL
     close();
     // Salir del programa

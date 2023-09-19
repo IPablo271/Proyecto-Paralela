@@ -97,39 +97,39 @@ void moveCircles()
         }
     }
 
-    // Verificar colisiones entre círculos
-    for (size_t i = 0; i < circles.size(); ++i)
-    {
-        for (size_t j = i + 1; j < circles.size(); ++j)
-        {
-            int dx = circles[i].x - circles[j].x;
-            int dy = circles[i].y - circles[j].y;
-            int distanceSquared = dx * dx + dy * dy;
+    // // Verificar colisiones entre círculos
+    // for (size_t i = 0; i < circles.size(); ++i)
+    // {
+    //     for (size_t j = i + 1; j < circles.size(); ++j)
+    //     {
+    //         int dx = circles[i].x - circles[j].x;
+    //         int dy = circles[i].y - circles[j].y;
+    //         int distanceSquared = dx * dx + dy * dy;
 
-            if (distanceSquared <= 4 * CIRCLE_RADIUS * CIRCLE_RADIUS) // 2 * radio porque estamos comparando centros
-            {
-                // Invertir direcciones
-                circles[i].dx = -circles[i].dx;
-                circles[i].dy = -circles[i].dy;
-                circles[j].dx = -circles[j].dx;
-                circles[j].dy = -circles[j].dy;
+    //         if (distanceSquared <= 4 * CIRCLE_RADIUS * CIRCLE_RADIUS) // 2 * radio porque estamos comparando centros
+    //         {
+    //             // Invertir direcciones
+    //             circles[i].dx = -circles[i].dx;
+    //             circles[i].dy = -circles[i].dy;
+    //             circles[j].dx = -circles[j].dx;
+    //             circles[j].dy = -circles[j].dy;
 
-                // Calcular la distancia real y el desplazamiento necesario para corregir la colisión
-                float distance = sqrt(distanceSquared);
-                float overlap = 2 * CIRCLE_RADIUS - distance;
+    //             // Calcular la distancia real y el desplazamiento necesario para corregir la colisión
+    //             float distance = sqrt(distanceSquared);
+    //             float overlap = 2 * CIRCLE_RADIUS - distance;
 
-                // Normalizar el vector de dirección
-                float dxn = dx / distance;
-                float dyn = dy / distance;
+    //             // Normalizar el vector de dirección
+    //             float dxn = dx / distance;
+    //             float dyn = dy / distance;
 
-                // Mover los círculos fuera de la colisión
-                circles[i].x += (overlap / 2) * dxn;
-                circles[i].y += (overlap / 2) * dyn;
-                circles[j].x -= (overlap / 2) * dxn;
-                circles[j].y -= (overlap / 2) * dyn;
-            }
-        }
-    }
+    //             // Mover los círculos fuera de la colisión
+    //             circles[i].x += (overlap / 2) * dxn;
+    //             circles[i].y += (overlap / 2) * dyn;
+    //             circles[j].x -= (overlap / 2) * dxn;
+    //             circles[j].y -= (overlap / 2) * dyn;
+    //         }
+    //     }
+    // }
 }
 
 // Función para dibujar un círculo relleno
@@ -190,8 +190,13 @@ int main(int argc, char *argv[])
 
     // Variables para medir el tiempo
     Uint32 startTime = SDL_GetTicks();
+    Uint32 lastFPSTime = SDL_GetTicks();
     Uint32 prevTime = startTime;
+    Uint32 totalTime = 0;
     int frames = 0;
+    int totalFrames = 0;
+    int displayFrames = 0;
+
     // Bucle principal
     while (!quit)
     {
@@ -215,6 +220,8 @@ int main(int argc, char *argv[])
 
         // Calcular y mostrar FPS
         frames++;
+        totalFrames++;
+        totalTime += deltaTime;
         if (currentTime - startTime >= 1000)
         {
             std::cout << "FPS: " << frames << std::endl;
@@ -228,6 +235,14 @@ int main(int argc, char *argv[])
             SDL_Delay(1000 / 120 - deltaTime);
         }
     }
+
+    if (totalTime > 0) {
+        float avgFPS = 1000.0f * totalFrames / totalTime;
+        std::cout << "Average FPS: " << avgFPS << std::endl;
+    } else {
+        std::cout << "No frames were rendered." << std::endl;
+    }
+
     // Cerrar SDL
     close();
     // Salir del programa

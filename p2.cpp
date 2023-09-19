@@ -74,6 +74,7 @@ void generateRandomCircles(int numCircles)
     std::srand(std::time(nullptr));
 
     // Generar círculos aleatorios
+    # pragma omp parallel for num_threads(2) // Se paraleliza el bucle for
     for (int i = 0; i < numCircles; ++i)
     {
         Circle circle;
@@ -88,10 +89,8 @@ void generateRandomCircles(int numCircles)
 // Función para mover los círculos ( se cambia la velocidad cuando tocan el borde)
 void moveCircles()
 {   
-    int num_threads = 4; 
-    omp_set_num_threads(num_threads);
 
-    #pragma omp parallel for // Se paraleliza el bucle for
+    #pragma omp parallel for num_threads(2) // Se paraleliza el bucle for
      for (int i = 0; i < circles.size(); ++i)
     {
         Circle &circle = circles[i];
@@ -162,7 +161,7 @@ void render(int frames)
 
 
     // Dibujar los círculos con la funcion drawFilledCircle
-    #pragma omp for // Se paraleliza el bucle for
+    #pragma omp parallel for num_threads(1) // Se paraleliza el bucle for
     for (int i = 0; i < circles.size(); ++i)
     {
         const Circle &circle = circles[i];
