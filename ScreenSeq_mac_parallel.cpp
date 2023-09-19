@@ -1,6 +1,5 @@
-
-// Librerias utiliazadas
-#include <SDL.h>
+// Librerias utilizadas
+#include <SDL2/SDL.h>
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -54,6 +53,7 @@ bool init()
 
     return true;
 }
+
 // Función para cerrar SDL
 void close()
 {
@@ -66,30 +66,26 @@ void close()
 void generateRandomCircles(int numCircles)
 {
     circles.clear();
-
-#pragma omp parallel
+    std::srand(std::time(nullptr));
+    # pragma omp parallel for num_threads(2)
+    for (int i = 0; i < numCircles; ++i)
     {
-        unsigned int seed = omp_get_thread_num();
+        Circle circle;
+        circle.x = std::rand() % (SCREEN_WIDTH - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
+        circle.y = std::rand() % (SCREEN_HEIGHT - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
+        circle.dx = std::rand() % (MAX_SPEED * 2 + 1) - MAX_SPEED;
+        circle.dy = std::rand() % (MAX_SPEED * 2 + 1) - MAX_SPEED;
+        circle.color = {static_cast<Uint8>(std::rand() % 256), static_cast<Uint8>(std::rand() % 256), static_cast<Uint8>(std::rand() % 256)};
 
-#pragma omp for
-        for (int i = 0; i < numCircles; ++i)
-        {
-            Circle circle;
-            circle.x = rand_r(&seed) % (SCREEN_WIDTH - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
-            circle.y = rand_r(&seed) % (SCREEN_HEIGHT - CIRCLE_RADIUS * 2) + CIRCLE_RADIUS;
-            circle.dx = rand_r(&seed) % (MAX_SPEED * 2 + 1) - MAX_SPEED;
-            circle.dy = rand_r(&seed) % (MAX_SPEED * 2 + 1) - MAX_SPEED;
-            circle.color = {static_cast<Uint8>(rand_r(&seed) % 256), static_cast<Uint8>(rand_r(&seed) % 256), static_cast<Uint8>(rand_r(&seed) % 256)};
-
-#pragma omp critical
-            circles.push_back(circle);
-        }
+        
+        circles.push_back(circle);
     }
 }
-// Función para mover los círculos ( se cambia la velocidad cuando tocan el borde)
+
+// Función para mover los círculos (se cambia la velocidad cuando tocan el borde)
 void moveCircles()
 {
-#pragma omp parallel for
+    # pragma omp parallel for num_threads(2)
     for (size_t i = 0; i < circles.size(); ++i)
     {
         Circle &circle = circles[i];
@@ -106,41 +102,6 @@ void moveCircles()
             circle.dy = -circle.dy; // Cambio de dirección en el eje y
         }
     }
-
-    // Verificar colisiones entre círculos
-#pragma omp parallel for
-    for (size_t i = 0; i < circles.size(); ++i)
-    {
-        for (size_t j = i + 1; j < circles.size(); ++j)
-        {
-            int dx = circles[i].x - circles[j].x;
-            int dy = circles[i].y - circles[j].y;
-            int distanceSquared = dx * dx + dy * dy;
-
-            if (distanceSquared <= 4 * CIRCLE_RADIUS * CIRCLE_RADIUS) // 2 * radio porque estamos comparando centros
-            {
-                // Invertir direcciones
-                circles[i].dx = -circles[i].dx;
-                circles[i].dy = -circles[i].dy;
-                circles[j].dx = -circles[j].dx;
-                circles[j].dy = -circles[j].dy;
-
-                // Calcular la distancia real y el desplazamiento necesario para corregir la colisión
-                float distance = sqrt(distanceSquared);
-                float overlap = 2 * CIRCLE_RADIUS - distance;
-
-                // Normalizar el vector de dirección
-                float dxn = dx / distance;
-                float dyn = dy / distance;
-
-                // Mover los círculos fuera de la colisión
-                circles[i].x += (overlap / 2) * dxn;
-                circles[i].y += (overlap / 2) * dyn;
-                circles[j].x -= (overlap / 2) * dxn;
-                circles[j].y -= (overlap / 2) * dyn;
-            }
-        }
-    }
 }
 
 // Función para dibujar un círculo relleno
@@ -148,7 +109,7 @@ void drawFilledCircle(SDL_Renderer *renderer, int centerX, int centerY, int radi
 {
     SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, 255);
 
-    // Llenar el circulo con puntos dentro del radio
+    // Llenar el círculo con puntos dentro del radio
     for (int y = -radius; y <= radius; ++y)
     {
         for (int x = -radius; x <= radius; ++x)
@@ -167,7 +128,7 @@ void render()
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    // Dibujar los círculos con la funcion drawFilledCircle
+    // Dibujar los círculos con la función drawFilledCircle
     for (const Circle &circle : circles)
     {
         drawFilledCircle(renderer, circle.x + CIRCLE_RADIUS, circle.y + CIRCLE_RADIUS, CIRCLE_RADIUS, circle.color);
@@ -234,9 +195,9 @@ int main(int argc, char *argv[])
         }
 
         // Esperar para mantener 60 FPS
-        if (deltaTime < 1000 / 120)
+        if (deltaTime < 1000 / 60)
         {
-            SDL_Delay(1000 / 120 - deltaTime);
+            SDL_Delay(1000 / 60 - deltaTime);
         }
     }
     // Cerrar SDL
