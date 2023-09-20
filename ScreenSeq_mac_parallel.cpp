@@ -102,6 +102,38 @@ void moveCircles()
             circle.dy = -circle.dy; // Cambio de dirección en el eje y
         }
     }
+    for (size_t i = 0; i < circles.size(); ++i)
+    {
+        for (size_t j = i + 1; j < circles.size(); ++j)
+        {
+            int dx = circles[i].x - circles[j].x;
+            int dy = circles[i].y - circles[j].y;
+            int distanceSquared = dx * dx + dy * dy;
+
+            if (distanceSquared <= 4 * CIRCLE_RADIUS * CIRCLE_RADIUS) // 2 * radio porque estamos comparando centros
+            {
+                // Invertir direcciones
+                circles[i].dx = -circles[i].dx;
+                circles[i].dy = -circles[i].dy;
+                circles[j].dx = -circles[j].dx;
+                circles[j].dy = -circles[j].dy;
+
+                // Calcular la distancia real y el desplazamiento necesario para corregir la colisión
+                float distance = sqrt(distanceSquared);
+                float overlap = 2 * CIRCLE_RADIUS - distance;
+
+                // Normalizar el vector de dirección
+                float dxn = dx / distance;
+                float dyn = dy / distance;
+
+                // Mover los círculos fuera de la colisión
+                circles[i].x += (overlap / 2) * dxn;
+                circles[i].y += (overlap / 2) * dyn;
+                circles[j].x -= (overlap / 2) * dxn;
+                circles[j].y -= (overlap / 2) * dyn;
+            }
+        }
+    }
 }
 
 // Función para dibujar un círculo relleno
@@ -207,7 +239,9 @@ int main(int argc, char *argv[])
             SDL_Delay(1000 / 60 - deltaTime);
         }
     }
-
+    Uint32 endTime = SDL_GetTicks();
+    Uint32 elapsedTime = endTime - startTime;
+    std::cout << "Tiempo de ejecución: " << elapsedTime << " milisegundos." << std::endl;
     if (totalTime > 0) {
         float avgFPS = 1000.0f * totalFrames / totalTime;
         std::cout << "Average FPS: " << avgFPS << std::endl;
