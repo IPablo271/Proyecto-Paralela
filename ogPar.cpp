@@ -1,3 +1,13 @@
+/**
+ * 
+ * @author Pablo Gonzalez
+ * @author Javier Mombiela
+ * @author Jose Hernandez
+ *
+ * ogPar.cpp: Version original del programa paralelizado
+ *  
+*/
+
 
 // Librerias utiliazadas
 #include <SDL2/SDL.h>
