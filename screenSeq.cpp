@@ -1,3 +1,13 @@
+/**
+ * 
+ * @author Pablo Gonzalez
+ * @author Javier Mombiela
+ * @author Jose Hernandez
+ *
+ * screenSeq.cpp: Version final de la version secuencial
+ *  
+*/
+
 
 // Librerias utiliazadas
 #include <SDL2/SDL.h>

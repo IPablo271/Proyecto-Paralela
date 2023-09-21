@@ -1,3 +1,13 @@
+/**
+ * 
+ * @author Pablo Gonzalez
+ * @author Javier Mombiela
+ * @author Jose Hernandez
+ *
+ * screenPar.cpp: Version final de la version paralela
+ *  
+*/
+
 // Librerias utilizadas
 #include <SDL2/SDL.h>
 #include <iostream>

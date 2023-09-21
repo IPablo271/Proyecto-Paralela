@@ -1,13 +1,23 @@
+/**
+ * 
+ * @author Pablo Gonzalez
+ * @author Javier Mombiela
+ * @author Jose Hernandez
+ *
+ * ogSeq.cpp: Version original de la version secuencial
+ *  
+*/
+
 
 // Librerias utiliazadas
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
 #include <iostream>
 #include <vector>
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
-#include <omp.h>
+#include <SDL2/SDL_ttf.h>
+
 
 // Constantes de tamaño y ajustes del programa
 const int SCREEN_WIDTH = 640;
@@ -66,6 +76,7 @@ void close()
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    TTF_Quit();
 }
 // Función para generar círculos aleatorios
 void generateRandomCircles(int numCircles)
@@ -74,7 +85,6 @@ void generateRandomCircles(int numCircles)
     std::srand(std::time(nullptr));
 
     // Generar círculos aleatorios
-    # pragma omp parallel for num_threads(2) // Se paraleliza el bucle for
     for (int i = 0; i < numCircles; ++i)
     {
         Circle circle;
@@ -89,12 +99,9 @@ void generateRandomCircles(int numCircles)
 }
 // Función para mover los círculos ( se cambia la velocidad cuando tocan el borde)
 void moveCircles()
-{   
-
-    #pragma omp parallel for num_threads(2) // Se paraleliza el bucle for
-     for (int i = 0; i < circles.size(); ++i)
+{
+    for (Circle &circle : circles)
     {
-        Circle &circle = circles[i];
         circle.x += circle.dx;
         circle.y += circle.dy;
 
@@ -186,6 +193,7 @@ void renderText(const std::string &text, int x, int y)
     TTF_CloseFont(font);
 }
 
+
 // Función para renderizar la escena
 void render(int frames)
 {
@@ -194,10 +202,8 @@ void render(int frames)
 
 
     // Dibujar los círculos con la funcion drawFilledCircle
-    #pragma omp parallel for num_threads(1) // Se paraleliza el bucle for
-    for (int i = 0; i < circles.size(); ++i)
+    for (const Circle &circle : circles)
     {
-        const Circle &circle = circles[i];
         drawFilledCircle(renderer, circle.x + CIRCLE_RADIUS, circle.y + CIRCLE_RADIUS, CIRCLE_RADIUS, circle.color);
     }
 
@@ -206,10 +212,10 @@ void render(int frames)
     SDL_RenderPresent(renderer);
 }
 
-
 // Función principal del programa
 int main(int argc, char *argv[])
 {
+    std::vector<Uint32> executionTimes;
     if (!init())
     {
         return 1;
@@ -244,6 +250,7 @@ int main(int argc, char *argv[])
     while (!quit)
     {
         // Calcular el tiempo transcurrido y gestionar eventos SDL
+        Uint32 startTime2 = SDL_GetTicks();
         Uint32 currentTime = SDL_GetTicks();
         Uint32 deltaTime = currentTime - prevTime;
         prevTime = currentTime;
@@ -273,6 +280,9 @@ int main(int argc, char *argv[])
         totalTime += deltaTime;
         if (currentTime - startTime >= 1000)
         {
+            Uint32 endTime = SDL_GetTicks();
+            Uint32 elapsedTime = endTime - startTime2;
+            executionTimes.push_back(elapsedTime);
             std::cout << "FPS: " << frames << std::endl;
             startTime = currentTime;
             frames = 0;
@@ -292,14 +302,21 @@ int main(int argc, char *argv[])
         }
 
     }
-    Uint32 endTime = SDL_GetTicks();
-    Uint32 elapsedTime = endTime - startTime;
-    std::cout << "Tiempo de ejecución: " << elapsedTime << " milisegundos." << std::endl;
     if (totalTime > 0) {
         float avgFPS = 1000.0f * totalFrames / totalTime;
         std::cout << "Average FPS: " << avgFPS << std::endl;
     } else {
         std::cout << "No frames were rendered." << std::endl;
+    }
+    Uint32 totalExecutionTime = 0;
+    for (Uint32 time : executionTimes) {
+        totalExecutionTime += time;
+    }
+    if (!executionTimes.empty()) {
+        float avgExecutionTime = static_cast<float>(totalExecutionTime) / executionTimes.size();
+        std::cout << "Average Execution Time: " << avgExecutionTime << " milliseconds" << std::endl;
+    } else {
+        std::cout << "No execution times recorded." << std::endl;
     }
 
     // Cerrar SDL
