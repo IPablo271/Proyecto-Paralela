@@ -238,7 +238,9 @@ int main(int argc, char *argv[])
     // Bucle principal
     while (!quit)
     {
+        Uint32 startTime2 = SDL_GetTicks();
         // Calcular el tiempo transcurrido y gestionar eventos SDL
+
         Uint32 currentTime = SDL_GetTicks();
         Uint32 deltaTime = currentTime - prevTime;
         prevTime = currentTime;
@@ -268,6 +270,9 @@ int main(int argc, char *argv[])
         totalTime += deltaTime;
         if (currentTime - startTime >= 1000)
         {
+            Uint32 endTime = SDL_GetTicks();
+            Uint32 elapsedTime = endTime - startTime2;
+            std::cout << "Tiempo de ejecución: " << elapsedTime << " milisegundos." << std::endl;
             std::cout << "FPS: " << frames << std::endl;
             startTime = currentTime;
             frames = 0;
@@ -287,9 +292,7 @@ int main(int argc, char *argv[])
         }
 
     }
-    Uint32 endTime = SDL_GetTicks();
-    Uint32 elapsedTime = endTime - startTime;
-    std::cout << "Tiempo de ejecución: " << elapsedTime << " milisegundos." << std::endl;
+    
 
     if (totalTime > 0) {
         float avgFPS = 1000.0f * totalFrames / totalTime;

@@ -168,6 +168,7 @@ void render()
 // Función principal del programa
 int main(int argc, char *argv[])
 {
+    std::vector<Uint32> executionTimes;
     if (!init())
     {
         return 1;
@@ -199,6 +200,7 @@ int main(int argc, char *argv[])
     while (!quit)
     {
         // Calcular el tiempo transcurrido y gestionar eventos SDL
+        Uint32 startTime2 = SDL_GetTicks();
         Uint32 currentTime = SDL_GetTicks();
         Uint32 deltaTime = currentTime - prevTime;
         prevTime = currentTime;
@@ -222,6 +224,9 @@ int main(int argc, char *argv[])
         totalTime += deltaTime;
         if (currentTime - startTime >= 1000)
         {
+            Uint32 endTime = SDL_GetTicks();
+            Uint32 elapsedTime = endTime - startTime2;
+            executionTimes.push_back(elapsedTime);
             std::cout << "FPS: " << frames << std::endl;
             startTime = currentTime;
             frames = 0;
@@ -234,9 +239,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    Uint32 endTime = SDL_GetTicks();
-    Uint32 elapsedTime = endTime - startTime;
-    std::cout << "Tiempo de ejecución: " << elapsedTime << " milisegundos." << std::endl;
+    
 
     if (totalTime > 0) {
         float avgFPS = 1000.0f * totalFrames / totalTime;
@@ -244,6 +247,18 @@ int main(int argc, char *argv[])
     } else {
         std::cout << "No frames were rendered." << std::endl;
     }
+    Uint32 totalExecutionTime = 0;
+    for (Uint32 time : executionTimes) {
+        totalExecutionTime += time;
+    }
+    if (!executionTimes.empty()) {
+        float avgExecutionTime = static_cast<float>(totalExecutionTime) / executionTimes.size();
+        std::cout << "Average Execution Time: " << avgExecutionTime << " milliseconds" << std::endl;
+    } else {
+        std::cout << "No execution times recorded." << std::endl;
+    }
+
+    
 
     // Cerrar SDL
     close();
