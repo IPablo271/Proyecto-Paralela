@@ -1,4 +1,4 @@
-# Screensaver con SDL en C++
+# Screensaver con SDL en C++ Secuencial
 
 Este proyecto es un programa simple de "screensaver" desarrollado en C++ utilizando la librería Simple DirectMedia Layer (SDL). El programa crea una serie de círculos que se mueven por la pantalla, rebotando en los bordes y generando un efecto visual similar a un screensaver clásico.
 
@@ -45,7 +45,7 @@ g++ -o screenSeq ScreenSeq.cpp -lSDL2
 ```
 3. Ejecuta el programa y proporciona el número de círculos como argumento en la línea de comandos.
 ```bash
-./ screenSeq 10
+./ screenSeq 100
 ```
 
 ## Autores
